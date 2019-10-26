@@ -1,0 +1,20 @@
+app_root: .
+ignored_folders:
+- vendor
+- log
+- logs
+- tmp
+- node_modules
+- bin
+- templates
+included_extensions:
+- .go
+build_target_path: ""
+build_path: C:\Users\user\AppData\Local\Temp
+build_flags: []
+build_delay: 200ns
+binary_name: ekas-data-forwarding
+command_flags: ["--env", "development"]
+command_env: ["PORT=6033"]
+enable_colors: true
+log_name: ""
