@@ -238,7 +238,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	//}
 
 	fmt.Println(deviceData)
-	url := "http://equscabanus.com:6055?id=" + strconv.Itoa(int(deviceData.DeviceID))
+	url := "http://144.76.140.105:5055/?id=" + strconv.Itoa(int(deviceData.DeviceID))
 	url += "&lat=" + strconv.Itoa(int(deviceData.Latitude/10000000)) + "&lon=" + strconv.Itoa(int(deviceData.Longitude/10000000))
 	url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
 	url += "&speed=5"
