@@ -119,37 +119,145 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	byteReader := bytes.NewReader(b)
 
-	scode := make([]byte, 4)
-	byteReader.Read(scode)
+	// scode := make([]byte, 4)
+	// byteReader.Read(scode)
+	// deviceData.SystemCode = string(scode)
+	// if deviceData.SystemCode != "MCPG" {
+	// 	fmt.Println("data not valid", deviceData.SystemCode)
+	// 	fmt.Println("device data", deviceData)
+	// 	return
+	// }
+
+	// byteReader.Seek(5, 0)
+	// did := make([]byte, 4)
+	// byteReader.Read(did)
+	// deviceData.DeviceID = binary.LittleEndian.Uint32(did)
+	// if deviceData.DeviceID == 0 {
+	// 	return
+	// }
+
+	// // fmt.Println(deviceData.DeviceID, time.Now(), " data received")
+
+	// // Transmission Reason – 1 byte
+	// byteReader.Seek(18, 0)
+	// reason := make([]byte, 1)
+	// byteReader.Read(reason)
+	// deviceData.TransmissionReason = int(reason[0])
+
+	// // Transmission Reason Specific data – 1 byte
+	// trsd := 0
+	// if deviceData.TransmissionReason == 255 {
+	// 	byteReader.Seek(17, 0)
+	// 	specific := make([]byte, 1)
+	// 	byteReader.Read(specific)
+
+	// 	var a = int(specific[0])
+	// 	// Failsafe
+	// 	failsafe := hasBit(a, 1)
+	// 	deviceData.Failsafe = failsafe
+	// 	// main power disconnected
+	// 	disconnect := hasBit(a, 2)
+	// 	deviceData.Disconnect = disconnect
+	// 	trsd = int(a)
+	// }
+	// deviceData.TransmissionReasonSpecificData = trsd
+
+	// // Number of satellites used (from GPS) – 1 byte
+	// byteReader.Seek(43, 0)
+	// satellites := make([]byte, 1)
+	// byteReader.Read(satellites)
+	// deviceData.NoOfSatellitesUsed = int(satellites[0])
+
+	// // Longitude – 4 bytes
+	// byteReader.Seek(44, 0)
+	// long := make([]byte, 4)
+	// byteReader.Read(long)
+	// deviceData.Longitude = readInt32(long)
+
+	// //  Latitude – 4 bytes
+	// byteReader.Seek(48, 0)
+	// lat := make([]byte, 4)
+	// byteReader.Read(lat)
+	// deviceData.Latitude = readInt32(lat)
+
+	// // Altitude
+	// byteReader.Seek(52, 0)
+	// alt := make([]byte, 4)
+	// byteReader.Read(alt)
+	// deviceData.Altitude = readInt32(alt)
+
+	// // Ground speed – 4 bytes
+	// byteReader.Seek(56, 0)
+	// gspeed := make([]byte, 4)
+	// byteReader.Read(gspeed)
+	// deviceData.GroundSpeed = binary.LittleEndian.Uint32(gspeed)
+
+	// // Speed direction – 2 bytes
+	// byteReader.Seek(60, 0)
+	// speedd := make([]byte, 2)
+	// byteReader.Read(speedd)
+	// deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(speedd))
+
+	// // UTC time – 3 bytes (hours, minutes, seconds)
+	// byteReader.Seek(62, 0)
+	// sec := make([]byte, 1)
+	// byteReader.Read(sec)
+	// deviceData.UTCTimeSeconds = int(sec[0])
+
+	// byteReader.Seek(63, 0)
+	// min := make([]byte, 1)
+	// byteReader.Read(min)
+	// deviceData.UTCTimeMinutes = int(min[0])
+
+	// byteReader.Seek(64, 0)
+	// hrs := make([]byte, 1)
+	// byteReader.Read(hrs)
+	// deviceData.UTCTimeHours = int(hrs[0])
+
+	// // UTC date – 4 bytes (day, month, year)
+	// byteReader.Seek(65, 0)
+	// day := make([]byte, 1)
+	// byteReader.Read(day)
+	// deviceData.UTCTimeDay = int(day[0])
+
+	// byteReader.Seek(66, 0)
+	// mon := make([]byte, 1)
+	// byteReader.Read(mon)
+	// deviceData.UTCTimeMonth = int(mon[0])
+
+	// byteReader.Seek(67, 0)
+	// yr := make([]byte, 2)
+	// byteReader.Read(yr)
+	// deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
+
+	// deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
+	// deviceData.DateTimeStamp = deviceData.DateTime.Unix()
+
+	// if checkIdleState(deviceData) != "idle3" {
+	// clientJobs <- models.ClientJob{deviceData, conn}
+	//}
+
+	scode := processSeeked(byteReader, 4, 0)
 	deviceData.SystemCode = string(scode)
 	if deviceData.SystemCode != "MCPG" {
-		fmt.Println("data not valid", deviceData.SystemCode)
-		fmt.Println("device data", deviceData)
 		return
 	}
 
-	byteReader.Seek(5, 0)
-	did := make([]byte, 4)
-	byteReader.Read(did)
+	did := processSeeked(byteReader, 4, 5)
 	deviceData.DeviceID = binary.LittleEndian.Uint32(did)
 	if deviceData.DeviceID == 0 {
 		return
+
 	}
 
-	// fmt.Println(deviceData.DeviceID, time.Now(), " data received")
-
 	// Transmission Reason – 1 byte
-	byteReader.Seek(18, 0)
-	reason := make([]byte, 1)
-	byteReader.Read(reason)
+	reason := processSeeked(byteReader, 1, 18)
 	deviceData.TransmissionReason = int(reason[0])
 
 	// Transmission Reason Specific data – 1 byte
 	trsd := 0
 	if deviceData.TransmissionReason == 255 {
-		byteReader.Seek(17, 0)
-		specific := make([]byte, 1)
-		byteReader.Read(specific)
+		specific := processSeeked(byteReader, 1, 17)
 
 		var a = int(specific[0])
 		// Failsafe
@@ -162,96 +270,119 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	}
 	deviceData.TransmissionReasonSpecificData = trsd
 
+	// Engine Off – 1 byte
+	ignition := processSeeked(byteReader, 1, 19)
+	deviceData.IgnitionStatus = int8(ignition[0])
+
+	// GPS Lock Status
+	gps := processSeeked(byteReader, 1, 20)
+	deviceData.GPSLockStatus = int8(gps[0])
+
 	// Number of satellites used (from GPS) – 1 byte
-	byteReader.Seek(43, 0)
-	satellites := make([]byte, 1)
-	byteReader.Read(satellites)
+	satellites := processSeeked(byteReader, 1, 43)
 	deviceData.NoOfSatellitesUsed = int(satellites[0])
 
 	// Longitude – 4 bytes
-	byteReader.Seek(44, 0)
-	long := make([]byte, 4)
-	byteReader.Read(long)
+	long := processSeeked(byteReader, 4, 44)
 	deviceData.Longitude = readInt32(long)
 
 	//  Latitude – 4 bytes
-	byteReader.Seek(48, 0)
-	lat := make([]byte, 4)
-	byteReader.Read(lat)
+	lat := processSeeked(byteReader, 4, 48)
 	deviceData.Latitude = readInt32(lat)
 
 	// Altitude
-	byteReader.Seek(52, 0)
-	alt := make([]byte, 4)
-	byteReader.Read(alt)
+	alt := processSeeked(byteReader, 4, 52)
 	deviceData.Altitude = readInt32(alt)
 
 	// Ground speed – 4 bytes
-	byteReader.Seek(56, 0)
-	gspeed := make([]byte, 4)
-	byteReader.Read(gspeed)
+	gspeed := processSeeked(byteReader, 4, 56)
 	deviceData.GroundSpeed = binary.LittleEndian.Uint32(gspeed)
 
 	// Speed direction – 2 bytes
-	byteReader.Seek(60, 0)
-	speedd := make([]byte, 2)
-	byteReader.Read(speedd)
+	speedd := processSeeked(byteReader, 2, 60)
 	deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(speedd))
 
-	// UTC time – 3 bytes (hours, minutes, seconds)
-	byteReader.Seek(62, 0)
-	sec := make([]byte, 1)
-	byteReader.Read(sec)
+	sec := processSeeked(byteReader, 1, 62)
 	deviceData.UTCTimeSeconds = int(sec[0])
 
-	byteReader.Seek(63, 0)
-	min := make([]byte, 1)
-	byteReader.Read(min)
+	min := processSeeked(byteReader, 1, 63)
 	deviceData.UTCTimeMinutes = int(min[0])
 
-	byteReader.Seek(64, 0)
-	hrs := make([]byte, 1)
-	byteReader.Read(hrs)
+	hrs := processSeeked(byteReader, 1, 64)
 	deviceData.UTCTimeHours = int(hrs[0])
 
-	// UTC date – 4 bytes (day, month, year)
-	byteReader.Seek(65, 0)
-	day := make([]byte, 1)
-	byteReader.Read(day)
+	day := processSeeked(byteReader, 1, 65)
 	deviceData.UTCTimeDay = int(day[0])
 
-	byteReader.Seek(66, 0)
-	mon := make([]byte, 1)
-	byteReader.Read(mon)
+	mon := processSeeked(byteReader, 1, 66)
 	deviceData.UTCTimeMonth = int(mon[0])
 
-	byteReader.Seek(67, 0)
-	yr := make([]byte, 2)
-	byteReader.Read(yr)
+	yr := processSeeked(byteReader, 2, 67)
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
+
+	deviceData.DeviceTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
+
+	loc := time.FixedZone("UTC+3", 3*60*60)
+	now := time.Now().In(loc)
+
+	if deviceData.UTCTimeYear > now.Year() || deviceData.UTCTimeYear < now.Year() {
+		deviceData.UTCTimeYear = now.Year()
+	}
+	if time.Month(deviceData.UTCTimeMonth) > now.Month() || time.Month(deviceData.UTCTimeMonth) < now.Month() {
+		deviceData.UTCTimeMonth = int(now.Month())
+	}
+	if deviceData.UTCTimeDay > now.Day() || deviceData.UTCTimeDay < now.Day() {
+		deviceData.UTCTimeDay = now.Day()
+	}
+	if deviceData.UTCTimeHours > now.Hour() { //|| deviceData.UTCTimeHours < now.Hour() {
+		deviceData.UTCTimeHours = now.Hour()
+	}
 
 	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
-	// if checkIdleState(deviceData) != "idle3" {
-	// clientJobs <- models.ClientJob{deviceData, conn}
-	//}
+	checksum := processSeeked(byteReader, 1, 69)
+	deviceData.Checksum = int(checksum[0])
+
+	chks := make([]byte, 1)
+	for i := 4; i < 69; i++ {
+		chks[0] += b[i]
+	}
+
+	if chks[0] != checksum[0] {
+		return
+	}
+
+	fmt.Printf("data sent %d", deviceData.DeviceID)
 
 	fmt.Println(deviceData)
 	url := "http://144.76.140.105:5055/?id=" + strconv.Itoa(int(deviceData.DeviceID))
 	url += "&lat=" + strconv.Itoa(int(deviceData.Latitude/10000000)) + "&lon=" + strconv.Itoa(int(deviceData.Longitude/10000000))
 	url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
-	url += "&speed=5"
+	url += "&speed=" + strconv.Itoa(int(deviceData.GroundSpeed))
+
+	fmt.Println("----------------")
+	fmt.Println("done")
+	fmt.Println("----------------")
 	response, err := http.Get(url)
 	if err != nil {
 		fmt.Printf("%s", err)
-	} else {
-		defer response.Body.Close()
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			fmt.Printf("%s", err)
-		}
-		fmt.Printf("%s\n", string(contents))
 	}
 
+	defer response.Body.Close()
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("%s", err)
+	}
+
+	fmt.Println("done")
+	fmt.Printf("%s\n", string(contents))
+
+}
+
+func processSeeked(byteReader *bytes.Reader, bytesize, seek int64) []byte {
+	byteReader.Seek(seek, 0)
+	val := make([]byte, bytesize)
+	byteReader.Read(val)
+	return val
 }
