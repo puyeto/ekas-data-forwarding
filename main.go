@@ -362,7 +362,9 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	url += "&speed=" + strconv.Itoa(int(deviceData.GroundSpeed))
 
 	fmt.Println("----------------")
+	fmt.Println(url)
 	fmt.Println("done")
+	fmt.Println("----------------")
 	fmt.Println("----------------")
 	response, err := http.Get(url)
 	if err != nil {
