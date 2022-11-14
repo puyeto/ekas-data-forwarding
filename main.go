@@ -237,7 +237,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	fmt.Println(deviceData)
 	url := "http://144.76.140.105:5055/?id=" + strconv.Itoa(int(deviceData.DeviceID))
-	url += "&lat=" + strconv.FormatFloat(deviceData.Latitude, 'f', 0, 64) + "&lon=" + strconv.FormatFloat(deviceData.Longitude, 'f', 0, 64)
+	url += "&lat=" + float64ToString(deviceData.Latitude) + "&lon=" + float64ToString(deviceData.Longitude)
 	url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
 	url += "&speed=" + strconv.Itoa(int(deviceData.GroundSpeed))
 
@@ -267,4 +267,8 @@ func processSeeked(byteReader *bytes.Reader, bytesize, seek int64) []byte {
 	val := make([]byte, bytesize)
 	byteReader.Read(val)
 	return val
+}
+
+func float64ToString(val float64) string {
+	return fmt.Sprint(val)
 }

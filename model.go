@@ -13,15 +13,15 @@ type ClientJob struct {
 
 // DeviceData ...
 type DeviceData struct {
-	SystemCode    string `json:"system_code,omitempty"`    // 4 bytes
-	SystemMessage int    `json:"system_message,omitempty"` // 1 byte
-	DeviceID      uint32 `json:"device_id,omitempty"`      // 4 bytes
+	SystemCode string `json:"system_code,omitempty"` // 4 bytes
+	// SystemMessage int    `json:"system_message,omitempty"` // 1 byte
+	DeviceID uint32 `json:"device_id,omitempty"` // 4 bytes
 	// CommunicationControlField      uint32    `json:"communication_control_field,omitempty"`      // 2 bytes
 	// MessageNumerator               int       `json:"message_numerator,omitempty"`                // 1 byte
 	// HardwareVersion                int       `json:"hardware_version,omitempty"`                 // 1 byte
 	// SoftwareVersion                int       `json:"software_version,omitempty"`                 // 1 byte
 	// ProtocolVersionIdentifier      int       `json:"protocol_version_identifier,omitempty"`      // 1 byte
-	Status int `json:"status,omitempty"` // 1 byte
+	// Status int `json:"status,omitempty"` // 1 byte
 	// ConfigurationFlags             int       `json:"configuration_flags,omitempty"`              // 2 bytes
 	// TransmissionReasonSpecificData int       `json:"transmission_reason_specificData,omitempty"` // 1 byte
 	// Failsafe                       bool      `json:"failsafe"`
