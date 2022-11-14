@@ -139,46 +139,46 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	// fmt.Println(deviceData.DeviceID, time.Now(), " data received")
 
 	// Transmission Reason – 1 byte
-	byteReader.Seek(18, 0)
-	reason := make([]byte, 1)
-	byteReader.Read(reason)
-	deviceData.TransmissionReason = int(reason[0])
+	// byteReader.Seek(18, 0)
+	// reason := make([]byte, 1)
+	// byteReader.Read(reason)
+	// deviceData.TransmissionReason = int(reason[0])
 
 	// Transmission Reason Specific data – 1 byte
-	trsd := 0
-	if deviceData.TransmissionReason == 255 {
-		byteReader.Seek(17, 0)
-		specific := make([]byte, 1)
-		byteReader.Read(specific)
+	// trsd := 0
+	// if deviceData.TransmissionReason == 255 {
+	// 	byteReader.Seek(17, 0)
+	// 	specific := make([]byte, 1)
+	// 	byteReader.Read(specific)
 
-		var a = int(specific[0])
-		// Failsafe
-		failsafe := hasBit(a, 1)
-		deviceData.Failsafe = failsafe
-		// main power disconnected
-		disconnect := hasBit(a, 2)
-		deviceData.Disconnect = disconnect
-		trsd = int(a)
-	}
-	deviceData.TransmissionReasonSpecificData = trsd
+	// 	var a = int(specific[0])
+	// 	// Failsafe
+	// 	failsafe := hasBit(a, 1)
+	// 	deviceData.Failsafe = failsafe
+	// 	// main power disconnected
+	// 	disconnect := hasBit(a, 2)
+	// 	deviceData.Disconnect = disconnect
+	// 	trsd = int(a)
+	// }
+	// deviceData.TransmissionReasonSpecificData = trsd
 
 	// Number of satellites used (from GPS) – 1 byte
-	byteReader.Seek(43, 0)
-	satellites := make([]byte, 1)
-	byteReader.Read(satellites)
-	deviceData.NoOfSatellitesUsed = int(satellites[0])
+	// byteReader.Seek(43, 0)
+	// satellites := make([]byte, 1)
+	// byteReader.Read(satellites)
+	// deviceData.NoOfSatellitesUsed = int(satellites[0])
 
 	// Longitude – 4 bytes
 	byteReader.Seek(44, 0)
 	long := make([]byte, 4)
 	byteReader.Read(long)
-	deviceData.Longitude = readInt32(long)
+	deviceData.Longitude = float64(readInt32(long) / 10000000)
 
 	//  Latitude – 4 bytes
 	byteReader.Seek(48, 0)
 	lat := make([]byte, 4)
 	byteReader.Read(lat)
-	deviceData.Latitude = readInt32(lat)
+	deviceData.Latitude = float64(readInt32(lat) / 10000000)
 
 	// Altitude
 	byteReader.Seek(52, 0)
@@ -193,10 +193,10 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	deviceData.GroundSpeed = binary.LittleEndian.Uint32(gspeed)
 
 	// Speed direction – 2 bytes
-	byteReader.Seek(60, 0)
-	speedd := make([]byte, 2)
-	byteReader.Read(speedd)
-	deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(speedd))
+	// byteReader.Seek(60, 0)
+	// speedd := make([]byte, 2)
+	// byteReader.Read(speedd)
+	// deviceData.SpeedDirection = int(binary.LittleEndian.Uint16(speedd))
 
 	// UTC time – 3 bytes (hours, minutes, seconds)
 	byteReader.Seek(62, 0)
@@ -237,7 +237,7 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 
 	fmt.Println(deviceData)
 	url := "http://144.76.140.105:5055/?id=" + strconv.Itoa(int(deviceData.DeviceID))
-	url += "&lat=" + strconv.FormatFloat(float64(deviceData.Latitude/10000000), 'f', 0, 64) + "&lon=" + strconv.FormatFloat(float64(deviceData.Longitude/10000000), 'f', 0, 64)
+	url += "&lat=" + strconv.FormatFloat(deviceData.Latitude, 'f', 0, 64) + "&lon=" + strconv.FormatFloat(deviceData.Longitude, 'f', 0, 64)
 	url += "&timestamp=" + strconv.Itoa(int(deviceData.DateTimeStamp)) + "&altitude=" + strconv.Itoa(int(deviceData.Altitude))
 	url += "&speed=" + strconv.Itoa(int(deviceData.GroundSpeed))
 
