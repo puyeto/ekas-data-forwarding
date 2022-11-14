@@ -172,13 +172,13 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	byteReader.Seek(44, 0)
 	long := make([]byte, 4)
 	byteReader.Read(long)
-	deviceData.Longitude = float64(readInt32(long) / 10000000)
+	deviceData.Longitude = float64(readInt32(long)) / 10000000
 
 	//  Latitude – 4 bytes
 	byteReader.Seek(48, 0)
 	lat := make([]byte, 4)
 	byteReader.Read(lat)
-	deviceData.Latitude = float64(readInt32(lat) / 10000000)
+	deviceData.Latitude = float64(readInt32(lat)) / 10000000
 
 	// Altitude
 	byteReader.Seek(52, 0)
