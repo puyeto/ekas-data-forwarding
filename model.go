@@ -56,10 +56,6 @@ type DeviceData struct {
 	DateTime                       time.Time `json:"date_time,omitempty"`
 	Name                           string    `json:"name,omitempty"`
 	DateTimeStamp                  int64     `json:"date_time_stamp,omitempty"`
-	DeviceTime                     time.Time `json:"device_time,omitempty"`
-	Checksum                       int       `json:"checksum"`
-	IgnitionStatus                 int8      `json:"ignition_status"`
-	GPSLockStatus                  int8      `json:"gps_lock_status"`
 }
 
 // LastSeenStruct ...
