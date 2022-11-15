@@ -230,7 +230,8 @@ func processRequest(conn net.Conn, b []byte, byteLen int) {
 	byteReader.Read(yr)
 	deviceData.UTCTimeYear = int(binary.LittleEndian.Uint16(yr))
 
-	deviceData.DateTime = time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
+	dtime := time.Date(deviceData.UTCTimeYear, time.Month(deviceData.UTCTimeMonth), deviceData.UTCTimeDay, deviceData.UTCTimeHours, deviceData.UTCTimeMinutes, deviceData.UTCTimeSeconds, 0, time.UTC)
+	deviceData.DateTime = dtime.Add(-time.Hour * 3)
 	deviceData.DateTimeStamp = deviceData.DateTime.Unix()
 
 	fmt.Printf("data sent %d", deviceData.DeviceID)
